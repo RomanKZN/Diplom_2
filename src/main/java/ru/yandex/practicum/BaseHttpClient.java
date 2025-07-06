@@ -12,7 +12,7 @@ import static io.restassured.RestAssured.given;
 
 public abstract class BaseHttpClient {
 
-    //private final RequestSpecification baseRequestSpec;
+
     protected final RequestSpecification baseRequestSpec;
 
     public BaseHttpClient() {

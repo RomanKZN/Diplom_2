@@ -1,6 +1,11 @@
 package ru.yandex.practicum;
 
+import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.response.Response;
+import io.restassured.specification.RequestSpecification;
+
+import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 
 import static io.restassured.RestAssured.given;
 
@@ -8,63 +13,46 @@ import static io.restassured.RestAssured.given;
 public class OrderCreationPage extends BaseHttpClient {
 
     private static final String CREATE_ORDER_PATH = "orders";
-
-    // Создание заказа с ингредиентами, без авторизации.
-
-    public Response createOrder(String[] ingredientIds) {
-        return doCreateOrder(ingredientIds, null);
+    private static final String GET_INGREDIENTS_PATH = "ingredients";
+    public Response getIngredients() {
+        return doGetRequest(GET_INGREDIENTS_PATH);
+    }
+    public List<String> getAllIngredientIds() {
+        Response response = getIngredients(); // запрос данных ингредиентов
+        return response.jsonPath().getList("data._id"); // получаем список _id
     }
 
-    // Создание заказа с ингредиентами и авторизацией.
+    // Не авторизованный пользователь
+    public Response createOrderWithIngredients(List<String> ingredientIds) {
+        // Создаём тело запроса в виде JSON-объекта
+        Map<String, Object> requestBody = new HashMap<>();
+        requestBody.put("ingredients", ingredientIds);
 
-    public Response createOrder(String[] ingredientIds, String token) {
-        return doCreateOrder(ingredientIds, token);
+        return given()
+                .spec(baseRequestSpec)
+                .body(requestBody)
+                .when()
+                .post(CREATE_ORDER_PATH)
+                .then()
+                .extract()
+                .response();
     }
+    // Автоизованный пользователь
+    public Response createOrderWithIngredientsAuth(List<String> ingredientIds, String token) {
+        Map<String, Object> requestBody = new HashMap<>();
+        requestBody.put("ingredients", ingredientIds);
 
-    //Внутренний метод для объединения логики создания заказа.
-
-    private Response doCreateOrder(String[] ingredientIds, String token) {
-        // Формируем тело запроса
-        OrderRequest body = new OrderRequest(ingredientIds);
-        io.restassured.specification.RequestSpecification request = given()
-                .body(body);
-        if (token != null) {
-            request.header("Authorization", token);
-        }
-        return request.when().post(CREATE_ORDER_PATH);
-    }
-
-    // Проверка успешного создания заказа.
-
-    public boolean isOrderCreated(Response response) {
-        return response.statusCode() == 200 && response.jsonPath().getBoolean("success");
-    }
-
-    // Получение номера заказа.
-
-    public int getOrderNumber(Response response) {
-        return response.jsonPath().getInt("order.number");
-    }
-
-    // Получение сообщения об ошибке.
-
-    public String getErrorMessage(Response response) {
-        if (response.statusCode() == 400 || response.statusCode() == 500) {
-            return response.jsonPath().getString("message");
-        } else if (response.statusCode() == 403) {
-            return response.jsonPath().getString("message");
-        }
-        return null;
+        return given()
+                .spec(baseRequestSpec)
+                .header("Authorization", token)
+                .body(requestBody)
+                .when()
+                .post(CREATE_ORDER_PATH)
+                .then()
+                .extract()
+                .response();
     }
 
 
-    private static class OrderRequest {
-        private String[] ingredients;
 
-        public OrderRequest(String[] ingredients) {
-            this.ingredients = ingredients;
-        }
-
-        public String[] getIngredients() { return ingredients; }
-    }
 }
