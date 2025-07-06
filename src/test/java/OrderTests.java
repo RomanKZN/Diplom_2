@@ -63,9 +63,10 @@ public class OrderTests {
         assertNotNull(firstId);
     }
 
+    @Test
     @DisplayName("Получение списка ингридиентов")
     @Step("Проверка список возвращается с ингридиентами")
-    @Test
+
     public void testGetAllIngredientIdsReturnsNonEmptyList() {
 
         List<String> ingredientIds = orderPage.getAllIngredientIds();
@@ -82,9 +83,10 @@ public class OrderTests {
         }
     }
 
+    @Test
     @DisplayName("Создание заказа не авторизованным пользователем")
     @Step("Проверка с рандомными данными")
-    @Test
+
     public void testCreateOrderWithRandomIngredients() {
         // Получаем все ID ингредиентов
         List<String> allIngredientIds = orderPage.getAllIngredientIds();
@@ -106,9 +108,10 @@ public class OrderTests {
         response.then().body("order", notNullValue());
 
     }
+    @Test
     @DisplayName("Создание заказа авторизованным пользователем")
     @Step("Проверка с рандомными данными и авторизованным пользователем")
-    @Test
+
     public void testCreateOrderWithAuth() {
 
         String token = authToken;
@@ -134,11 +137,10 @@ public class OrderTests {
         assertNotNull(orderNumber);
     }
 
-
+    @Test
     @DisplayName("Передача пустого массива ингредиентов")
     @Step("Проверка получении ошибки если массив пустой")
 
-    @Test
     public void testCreateOrderWithoutIngredients() {
 
         Response response = orderPage.createOrderWithIngredientsAuth(Collections.emptyList(), authToken);
@@ -150,9 +152,10 @@ public class OrderTests {
     }
 
 
+    @Test
     @DisplayName("Передача невалидного ID")
     @Step("Проверка получении ошибки если передан невалидный ID")
-    @Test
+
     public void testCreateOrderWithInvalidIngredientHash() {
 
         Response response = orderPage.createOrderWithIngredients(Collections.singletonList("invalid_id_123456"));

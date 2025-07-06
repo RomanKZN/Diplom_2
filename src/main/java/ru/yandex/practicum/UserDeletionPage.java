@@ -10,13 +10,7 @@ public class UserDeletionPage extends BaseHttpClient {
 
     private static final String DELETE_USER_PATH = "auth/user";
 
-    private String authToken;
 
-    // Устанавливает токен для дальнейших запросов.
-
-    public void setAuthToken(String token) {
-        this.authToken = token;
-    }
 
     // Удаление пользователя.
 

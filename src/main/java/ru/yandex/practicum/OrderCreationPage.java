@@ -1,11 +1,8 @@
 package ru.yandex.practicum;
 
-import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.response.Response;
-import io.restassured.specification.RequestSpecification;
 
 import java.util.*;
-import java.util.concurrent.ThreadLocalRandom;
 
 import static io.restassured.RestAssured.given;
 
@@ -52,7 +49,5 @@ public class OrderCreationPage extends BaseHttpClient {
                 .extract()
                 .response();
     }
-
-
 
 }

@@ -3,6 +3,7 @@ package ru.yandex.practicum;
 import io.restassured.response.Response;
 
 import static io.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.*;
 
 
 public class OrdersPage extends BaseHttpClient {
@@ -13,9 +14,7 @@ public class OrdersPage extends BaseHttpClient {
     //Получить все последние заказы.
 
     public Response getAllOrders() {
-        return given()
-                .when()
-                .get(GET_ALL_ORDERS_PATH);
+        return doGetRequest(GET_ALL_ORDERS_PATH);
     }
 
     //Получить заказы конкретного пользователя с авторизацией.
@@ -24,7 +23,7 @@ public class OrdersPage extends BaseHttpClient {
         return given()
                 .header("authorization", token)
                 .when()
-                .get(GET_USER_ORDERS_PATH);
+                .get(URL.getHost() +GET_USER_ORDERS_PATH);
     }
 
     // Проверить успешный ответ.
@@ -59,5 +58,18 @@ public class OrdersPage extends BaseHttpClient {
             return response.jsonPath().getString("message");
         }
         return null;
+    }
+
+    public void verifyGetAllOrdersResponse(Response response) {
+        response.then().statusCode(200);
+        response.then().body("success", equalTo(true));
+        response.then().body("orders", notNullValue());
+        response.then().body("orders.size()", greaterThan(0));
+        response.then().body("orders[0].ingredients", notNullValue());
+        response.then().body("orders[0]._id", notNullValue());
+        response.then().body("orders[0].status", equalTo("done"));
+        response.then().body("orders[0].number", notNullValue());
+        response.then().body("orders[0].createdAt", notNullValue());
+        response.then().body("orders[0].updatedAt", notNullValue());
     }
 }
