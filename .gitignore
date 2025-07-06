@@ -25,6 +25,8 @@ hs_err_pid*
 .idea
 .build
 .target
+.allure/
+
 
 # Игнорировать папку allure-results в корне или в любых подкаталогах
 **/allure-results/
